@@ -1,0 +1,1 @@
+"""Data collection and loading (ENTSO-E, Open-Meteo)."""

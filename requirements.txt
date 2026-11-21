@@ -1,0 +1,43 @@
+# ============================================================
+# European Wind Power Forecasting - dependencies
+# Install with:  pip install -r requirements.txt
+# Versions are minimums chosen for Python 3.11 / 3.12 compatibility.
+# ============================================================
+
+# Core data handling
+pandas>=2.2.0
+numpy>=1.26.0
+
+# Visualization
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# Classical ML
+scikit-learn>=1.4.0
+
+# Gradient boosting
+xgboost>=2.0.0
+lightgbm>=4.3.0
+
+# HTTP requests to the APIs
+requests>=2.31.0
+
+# Environment variables / secrets
+python-dotenv>=1.0.0
+
+# Time zone support (zoneinfo on Windows needs the tzdata package)
+tzdata>=2024.1
+
+# Interactive dashboard
+streamlit>=1.32.0
+plotly>=5.20.0
+
+# Efficient columnar storage (optional but recommended for speed)
+pyarrow>=15.0.0
+
+# Testing
+pytest>=8.0.0
+
+# Notebook exploration
+jupyter>=1.0.0
+notebook>=7.1.0

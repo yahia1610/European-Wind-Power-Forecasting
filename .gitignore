@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment / secrets
+.env
+.env.local
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE / OS
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# Data (keep raw data out of git; see data/README.md)
+data/raw/*
+data/processed/*
+data/features/*
+!data/**/.gitkeep
+
+# Trained models (large binaries)
+models/*.pkl
+models/*.joblib
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Logs
+*.log

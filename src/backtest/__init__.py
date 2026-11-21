@@ -1,0 +1,1 @@
+"""Market backtesting of wind forecast errors vs day-ahead prices."""
