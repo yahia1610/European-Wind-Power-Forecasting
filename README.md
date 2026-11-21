@@ -43,6 +43,8 @@ European-Wind-Power-Forecasting/
 ├── .env.example            # Template for secrets (copy to .env)
 ├── .gitignore
 ├── requirements.txt        # Python dependencies
+├── requirements-lock.txt   # Exact pinned versions (pip freeze)
+├── data_dictionary.md      # Dataset schema, coverage & quality
 ├── README.md
 ├── data/
 │   ├── raw/                # Raw API responses (not committed)
@@ -118,10 +120,45 @@ pytest
 
 ## Data Sources
 
-- **ENTSO-E Transparency Platform** — actual wind generation, day-ahead prices,
-  and the official TSO day-ahead wind forecast. Requires a free API key.
+### Initial historical snapshot (current)
+
+The project starts from a committed, checksum-verified historical snapshot so
+work can begin without waiting for API authentication.
+
+| Item | Value |
+|---|---|
+| File | `data/raw/snapshot.parquet` (git-ignored, not committed) |
+| Source repo | https://github.com/hrsi56/delu-day-ahead-forecast |
+| Coverage | 2019-01-01 → **2026-09-06** (Europe/Berlin delivery days), hourly UTC |
+| Rows × columns | 67,343 × 22 |
+| SHA-256 | `7dd2dc73407706ca6bd3c1ad51d201ac0de35eec5ca129ce320cca639f697f00` |
+| License | **CC BY 4.0** |
+| Attribution | *Data: ENTSO-E Transparency Platform; Bundesnetzagentur \| SMARD.de — CC BY 4.0.* |
+
+> The snapshot **ends on 2026-09-06**; it is a historical training source, not
+> a live feed. Full column/quality details are in
+> [`data_dictionary.md`](data_dictionary.md).
+
+### Upcoming / complementary sources
+
+- **ENTSO-E Transparency Platform** — live actual wind generation, day-ahead
+  prices, and the official TSO day-ahead wind forecast. Requires a free API key
+  (configured in `.env` during Phase 2).
 - **Open-Meteo** — historical numerical weather prediction (wind speed at 100 m,
   direction, temperature, surface pressure). Free, no API key required.
+
+---
+
+## Dataset License & Attribution
+
+The historical snapshot is derived from ENTSO-E Transparency Platform and
+Bundesnetzagentur | SMARD.de data and is redistributed under **CC BY 4.0**.
+Attribution is required for any reuse:
+
+> Data: ENTSO-E Transparency Platform; Bundesnetzagentur | SMARD.de — CC BY 4.0.
+
+The project's own source code is licensed under the MIT License (see
+[LICENSE](LICENSE)).
 
 ---
 
