@@ -297,6 +297,11 @@ def _export_dashboard_results(
         "actual_publication": "H+1 (available at interval_start + 1h)",
         "dst_handling": "23-hour and 25-hour delivery days preserved",
         "splits": summary.get("splits", {}),
+        "eligible_test_rows": int(summary.get("splits", {}).get("test", 0)),
+        "common_evaluation_rows": int(len(out)),
+        "excluded_due_to_missing_tso": int(
+            summary.get("splits", {}).get("test", 0) - len(out)
+        ),
         "data_quality": {
             "timezone": "UTC",
             "hourly_frequency": True,
