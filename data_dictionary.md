@@ -220,3 +220,70 @@ assumption, not verified historical availability**. The 12:00 UTC run
 The pilot has **no missing values** and **no duplicate timestamps**; no
 interpolation was applied. Any future missing weather should be reported, not
 silently filled.
+
+---
+
+## 7. Processed Modelling Dataset (Phase 3)
+
+| Item | Value |
+|---|---|
+| File | `data/processed/de_lu_hourly.parquet` (git-ignored) |
+| Rows × columns | **67,343 × 37** |
+| Index | `timestamp_utc` (UTC), monotonic, hourly, 0 gaps, 0 duplicates |
+| Source | `data/raw/snapshot.parquet` — **never modified** (SHA-256 `7dd2dc7…f697f00`) |
+| Quality report | `data/processed/preprocessing_report.json` |
+| Build script | `src/data/preprocess.py` |
+
+### Derived columns
+
+| Column | Definition |
+|---|---|
+| `wind_total_actual_mw` | `wind_onshore_actual_mw + wind_offshore_actual_mw` |
+| `wind_total_forecast_mw` | `wind_onshore_forecast_mw + wind_offshore_forecast_mw` (official TSO) |
+| `wind_forecast_error_mw` | `wind_total_actual_mw - wind_total_forecast_mw` (positive = under-forecast) |
+| `is_target_missing` | `True` where `wind_total_actual_mw` is NaN |
+| `price_is_quarter_mean` | `True` on/after the 2025-10-01 aggregation change |
+| `decision_time_utc` | 18:00 Europe/Berlin on the day before delivery, in UTC |
+| `wind_total_actual_mw_lag24/48/168` | Hour-specific lags, masked against `decision_time_utc` |
+| `wind_actual_decision_lag1/24/48/168` | Actual wind strictly before the decision, broadcast per delivery date |
+| `wind_actual_decision_roll24_mean/std` | Rolling 24 h stats as of the decision time |
+| `split` | `train` / `validation` / `test` (chronological, by delivery date) |
+
+### Missing data
+
+- **Target:** 1 row (`2025-07-09 18:00 UTC`) is NaN and is **preserved** (no imputation).
+- **`load_forecast_mw`:** 194 missing rows (0.29%). First `2022-02-21 23:00 UTC`,
+  last `2024-10-26 22:00 UTC`; 16 distinct dates; longest run 48 h. By year:
+  2022 = 144, 2023 = 49, 2024 = 1. Not imputed; documented.
+- **Wind forecast:** 3 missing rows.
+
+### Prices
+
+- **2,501 negative prices (3.7%)**, min `-500.00`, max `936.28` EUR/MWh. These
+  are **valid market observations and are retained**.
+- **Methodology change:** before `2025-10-01` the price is an hourly product;
+  from `2025-10-01` it is the mean of four quarter-hour prices. Flagged by
+  `price_is_quarter_mean` (59,161 rows before, 8,182 after).
+
+### Chronological splits
+
+Split by **delivery date** so each delivery day stays intact (never shuffled):
+
+| Split | Delivery dates | Rows |
+|---|---|---|
+| `train` | 2019-01-01 → 2022-12-31 | 35,064 |
+| `validation` | 2023-01-01 → 2024-12-31 | 17,544 |
+| `test` | 2025-01-01 → 2026-09-06 | 14,735 |
+
+### Leakage prevention
+
+At the 18:00 Europe/Berlin decision time, only observations **strictly before**
+the cutoff are used. Lag features are masked so a value is used only when its
+observation time precedes `decision_time_utc`; decision-time rolling features
+use only data before the cutoff and are broadcast to the delivery day.
+
+**Available at decision time:** calendar features, the official TSO day-ahead
+wind forecast, the day-ahead price and load forecast, a weather forecast from a
+run initialised before the cutoff, and past actual wind generation.
+**Not available:** contemporaneous/future actual generation (the target) and the
+realised day-ahead price.

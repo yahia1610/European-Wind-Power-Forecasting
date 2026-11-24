@@ -185,6 +185,29 @@ The project's own source code is licensed under the MIT License (see
 
 ---
 
+## Data Preparation & EDA
+
+The historical electricity snapshot is the primary modelling dataset.
+
+| Step | Output |
+|---|---|
+| Preprocessing (`src/data/preprocess.py`) | `data/processed/de_lu_hourly.parquet` + `preprocessing_report.json` |
+| EDA (`notebooks/01_eda.ipynb`, executed) | `reports/figures/` (9 charts) |
+| Chronological splits | train 2019–2022 (35,064) · validation 2023–2024 (17,544) · test 2025–2026-09-06 (14,735) |
+
+Key EDA findings:
+
+- Strong seasonality: winter mean ≈ 20,900 MW vs summer ≈ 9,800 MW.
+- Onshore ≈ 80.6% of wind generation, offshore ≈ 19.4%.
+- Official TSO forecast vs actual: MAE ≈ 1,301 MW, RMSE ≈ 1,827 MW, nMAE ≈ 0.088.
+- Wind vs day-ahead price correlation ≈ −0.26 (strongest in winter, −0.40).
+- Daily wind ACF: lag-1 ≈ 0.68, lag-7 ≈ 0.23, lag-365 ≈ 0.21.
+
+The processed dataset and figures are git-ignored; only code and docs are
+committed.
+
+---
+
 ## Methodology Notes
 
 - **Time zones:** All timestamps are stored in **UTC** internally and converted to
