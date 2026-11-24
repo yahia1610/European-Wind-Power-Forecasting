@@ -282,8 +282,64 @@ the cutoff are used. Lag features are masked so a value is used only when its
 observation time precedes `decision_time_utc`; decision-time rolling features
 use only data before the cutoff and are broadcast to the delivery day.
 
-**Available at decision time:** calendar features, the official TSO day-ahead
-wind forecast, the day-ahead price and load forecast, a weather forecast from a
-run initialised before the cutoff, and past actual wind generation.
+**Available at decision time:** calendar features, past actual wind generation
+(H+1 safe), and the official TSO day-ahead wind forecast (used only as an
+independent benchmark). The day-ahead price and load forecast are day-ahead
+products, but their exact publication timestamps are not present in the
+snapshot, so they are **excluded from model features** in the MVP.
 **Not available:** contemporaneous/future actual generation (the target) and the
 realised day-ahead price.
+
+---
+
+## 8. Model Features and Evaluation (Phase 4)
+
+### Forecast origin and availability
+
+- **Decision time:** 18:00 Europe/Berlin on D-1 (16:00 UTC in CEST, 17:00 UTC in CET).
+- **Timestamp convention:** `timestamp_utc` is the **interval start** (verified
+  against `local_hour` and `delivery_date`).
+- **Actual publication:** H+1 — an interval starting at `t` is available at
+  `t + 1h`. Only observations with `t + 1h <= decision_time` are used.
+
+### Model input features
+
+| Feature group | Columns | Availability |
+|---|---|---|
+| Calendar / cyclical | `hour_sin/cos`, `dow_sin/cos`, `month_sin/cos`, `is_weekend`, `season_*` | Known in advance |
+| Forecast horizon | `forecast_horizon_hours` = valid − decision | Known in advance |
+| Decision-time history | `wind_actual_decision_lag1/24/48/168`, `wind_actual_decision_roll24_mean/std` | H+1 safe, constant per delivery day |
+| Hour-specific lags | `wind_total_actual_mw_lag48`, `wind_total_actual_mw_lag168` | Always before the cutoff for a delivery day |
+
+### Excluded from model inputs
+
+- `wind_total_actual_mw` — the target (contemporaneous actual).
+- `wind_total_forecast_mw` — kept as an **independent benchmark only**.
+- `price_eur_mwh`, `load_forecast_mw` — publication time not verified in the snapshot.
+- The 7-day weather pilot — not a long-term historical feature.
+
+### Chronological splits (eligible rows)
+
+| Split | Delivery dates | Eligible rows |
+|---|---|---|
+| `train` | 2019-01-01 → 2022-12-31 | 34,872 |
+| `validation` | 2023-01-01 → 2024-12-31 | 17,544 |
+| `test` | 2025-01-01 → 2026-09-06 | 14,731 (common evaluation set) |
+
+### Metrics
+
+- **MAE**, **RMSE**, **bias** (prediction − actual).
+- **`mean_normalized_mae`** = MAE / mean(actual generation). This is **not** an
+  installed-capacity nMAE; reliable DE-LU installed-capacity data is unavailable.
+- **`improvement_vs_persistence_pct`** = (MAE_persistence − MAE_model) / MAE_persistence.
+
+### Test results
+
+| Model | MAE (MW) | RMSE (MW) | Bias (MW) | Mean-normalized MAE | Δ vs persistence |
+|---|---|---|---|---|---|
+| Persistence | 7,453.6 | 9,943.1 | +443.9 | 0.490 | — |
+| Seasonal naive 48 h | 9,484.0 | 12,302.0 | +16.2 | 0.624 | −27.2% |
+| Seasonal naive 168 h | 11,186.8 | 14,248.1 | −119.1 | 0.736 | −50.1% |
+| Ridge | 6,476.4 | 8,410.1 | −311.4 | 0.426 | +13.1% |
+| LightGBM | 6,644.2 | 8,729.2 | −545.0 | 0.437 | +10.9% |
+| TSO official | 1,402.8 | 1,996.3 | −101.8 | 0.092 | +81.2% |

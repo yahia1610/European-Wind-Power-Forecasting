@@ -75,7 +75,7 @@ European-Wind-Power-Forecasting/
 | 4     | Exploratory Data Analysis (EDA)                                    | ⏳     |
 | 5     | Feature engineering                                                | ⏳     |
 | 6     | Machine Learning models (baselines, Ridge, Random Forest, XGBoost) | ⏳     |
-| 7     | Walk-forward validation and evaluation (MAE, RMSE, nMAE)           | ⏳     |
+| 7     | Walk-forward validation and evaluation (MAE, RMSE, mean-normalized MAE) | ⏳     |
 | 8     | Comparison with official TSO day-ahead forecast                    | ⏳     |
 | 9     | Exploratory market backtesting (day-ahead prices, costs)           | ⏳     |
 | 10    | Streamlit dashboard and professional documentation                 | ⏳     |
@@ -199,12 +199,48 @@ Key EDA findings:
 
 - Strong seasonality: winter mean ≈ 20,900 MW vs summer ≈ 9,800 MW.
 - Onshore ≈ 80.6% of wind generation, offshore ≈ 19.4%.
-- Official TSO forecast vs actual: MAE ≈ 1,301 MW, RMSE ≈ 1,827 MW, nMAE ≈ 0.088.
+- Official TSO forecast vs actual: MAE ≈ 1,301 MW, RMSE ≈ 1,827 MW, mean-normalized MAE ≈ 0.088.
 - Wind vs day-ahead price correlation ≈ −0.26 (strongest in winter, −0.40).
 - Daily wind ACF: lag-1 ≈ 0.68, lag-7 ≈ 0.23, lag-365 ≈ 0.21.
 
 The processed dataset and figures are git-ignored; only code and docs are
 committed.
+
+---
+
+## Phase 4 — Forecasting Models & Evaluation
+
+**Decision time:** 18:00 Europe/Berlin on D-1. `timestamp_utc` is the interval
+start, and actual generation follows an **H+1** publication rule, so only
+observations with `interval_start + 1h <= decision_time` are used.
+
+**Models:** Ridge Regression and LightGBM Regressor (selected on validation MAE).
+**Baselines:** persistence, seasonal naive 48 h, seasonal naive 168 h.
+**Benchmark:** official TSO day-ahead wind forecast (independent, not a feature).
+
+| Model | Test MAE (MW) | Test RMSE (MW) | Bias (MW) | Mean-normalized MAE\* | Δ vs persistence |
+|---|---|---|---|---|---|
+| Persistence | 7,453.6 | 9,943.1 | +443.9 | 0.490 | — |
+| Seasonal naive 48 h | 9,484.0 | 12,302.0 | +16.2 | 0.624 | −27.2% |
+| Seasonal naive 168 h | 11,186.8 | 14,248.1 | −119.1 | 0.736 | −50.1% |
+| Ridge | 6,476.4 | 8,410.1 | −311.4 | 0.426 | **+13.1%** |
+| LightGBM | 6,644.2 | 8,729.2 | −545.0 | 0.437 | +10.9% |
+| **TSO official** | **1,402.8** | **1,996.3** | −101.8 | 0.092 | +81.2% |
+
+\* **Mean-normalized MAE** = MAE / mean(actual generation). It is **not** an
+installed-capacity nMAE; reliable DE-LU installed-capacity data is unavailable,
+so no installed-capacity normalization is claimed.
+
+**Key finding:** the official TSO day-ahead forecast is far more accurate than
+the no-weather ML models; Ridge improves on the persistence baseline by 13.1% on
+the held-out test set. The TSO forecast is kept as an independent benchmark.
+
+**Outputs:** `reports/model_comparison.csv`, `reports/phase4_summary.json`,
+`reports/figures/10…14*.png`, `models/best_model.joblib`.
+
+**Excluded from model inputs:** contemporaneous actual generation (the target),
+the TSO forecast, day-ahead price, load forecast (publication time not verified
+in the snapshot), and the 7-day weather pilot.
 
 ---
 
@@ -216,7 +252,7 @@ committed.
   time** (e.g., day-ahead weather forecasts, calendar features, past generation).
 - **Validation:** **Walk-forward (expanding window)** validation that respects the
   time order of the data.
-- **Metrics:** MAE, RMSE, and normalized MAE (nMAE = MAE / mean generation).
+- **Metrics:** MAE, RMSE, and mean-normalized MAE (MAE / mean generation).
 
 ---
 

@@ -1,0 +1,366 @@
+{
+  "project_title": "European Wind Power Forecasting & Market Analytics",
+  "business_objective": "Predict hourly DE-LU wind generation for the next 24 hours to support day-ahead electricity market decisions.",
+  "market": "DE-LU (Germany + Luxembourg)",
+  "coverage": {
+    "start": "2018-12-31 23:00:00+00:00",
+    "end": "2026-09-06 21:00:00+00:00",
+    "rows": 67343
+  },
+  "decision_time": "18:00 Europe/Berlin on D-1 (16:00 UTC CEST / 17:00 UTC CET)",
+  "timestamp_convention": "interval_start",
+  "actual_publication": "H+1 (available at interval_start + 1h)",
+  "dst_handling": "23-hour and 25-hour delivery days preserved",
+  "splits": {
+    "train": 34872,
+    "validation": 17544,
+    "test": 14732
+  },
+  "models_test_metrics": [
+    {
+      "model": "persistence",
+      "split": "test",
+      "n": 14731,
+      "mae": 7453.615472812437,
+      "rmse": 9943.06377095261,
+      "bias": 443.9458835109632,
+      "mean_normalized_mae": 0.49041486879242363,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": NaN
+    },
+    {
+      "model": "seasonal_naive_48h",
+      "split": "test",
+      "n": 14731,
+      "mae": 9483.961363790648,
+      "rmse": 12301.971044808255,
+      "bias": 16.19189803815076,
+      "mean_normalized_mae": 0.6240026313164284,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": -27.239745575607362
+    },
+    {
+      "model": "seasonal_naive_168h",
+      "split": "test",
+      "n": 14731,
+      "mae": 11186.822665806802,
+      "rmse": 14248.112720245992,
+      "bias": -119.12524675853632,
+      "mean_normalized_mae": 0.736043359074127,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": -50.08585707984923
+    },
+    {
+      "model": "TSO_official",
+      "split": "test",
+      "n": 14731,
+      "mae": 1402.7626372954992,
+      "rmse": 1996.3275493098624,
+      "bias": -101.79036793157285,
+      "mean_normalized_mae": 0.09229556545081752,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": 81.18010457593137
+    },
+    {
+      "model": "Ridge",
+      "split": "test",
+      "n": 14731,
+      "mae": 6476.405750084547,
+      "rmse": 8410.130151482137,
+      "bias": -311.3558567177252,
+      "mean_normalized_mae": 0.4261187993611078,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": 13.110546503134316
+    },
+    {
+      "model": "LightGBM",
+      "split": "test",
+      "n": 14731,
+      "mae": 6644.205506267407,
+      "rmse": 8729.181389229081,
+      "bias": -544.996941961267,
+      "mean_normalized_mae": 0.4371592797443502,
+      "normalization_denominator": "mean_actual_generation",
+      "improvement_vs_persistence_pct": 10.859293312049791
+    }
+  ],
+  "tso_is_best_benchmark": true,
+  "nmae_note": "Installed-capacity nMAE is not reported because reliable DE-LU installed capacity data is unavailable. mean_normalized_mae = MAE / mean(actual generation).",
+  "weather_pilot": {
+    "available": true,
+    "source": "Open-Meteo Single Runs API",
+    "model": "ECMWF IFS HRES 9km (ecmwf_ifs)",
+    "delivery_dates": [
+      "2026-08-01",
+      "2026-08-02",
+      "2026-08-03",
+      "2026-08-04",
+      "2026-08-05",
+      "2026-08-06",
+      "2026-08-07"
+    ],
+    "n_locations": 6,
+    "n_records": 1008,
+    "missing_values": 0,
+    "lead_hours": {
+      "min": 16.0,
+      "max": 39.0,
+      "mean": 27.5
+    },
+    "daily_mean_wind_speed": [
+      {
+        "date": "2026-07-31",
+        "location_label": "central_germany",
+        "wind_speed_100m": 17.05
+      },
+      {
+        "date": "2026-07-31",
+        "location_label": "north_germany",
+        "wind_speed_100m": 20.5
+      },
+      {
+        "date": "2026-07-31",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 18.65
+      },
+      {
+        "date": "2026-07-31",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 11.899999999999999
+      },
+      {
+        "date": "2026-07-31",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 21.4
+      },
+      {
+        "date": "2026-07-31",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 17.45
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "central_germany",
+        "wind_speed_100m": 14.920833333333334
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "north_germany",
+        "wind_speed_100m": 18.191666666666666
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 20.425
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 16.037499999999998
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 14.516666666666666
+      },
+      {
+        "date": "2026-08-01",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 14.5
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "central_germany",
+        "wind_speed_100m": 19.099999999999998
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "north_germany",
+        "wind_speed_100m": 16.145833333333332
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 15.791666666666666
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 14.154166666666667
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 14.933333333333332
+      },
+      {
+        "date": "2026-08-02",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 16.916666666666668
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "central_germany",
+        "wind_speed_100m": 18.400000000000002
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "north_germany",
+        "wind_speed_100m": 19.337500000000002
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 37.512499999999996
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 18.3
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 30.854166666666668
+      },
+      {
+        "date": "2026-08-03",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 9.299999999999999
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "central_germany",
+        "wind_speed_100m": 13.279166666666667
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "north_germany",
+        "wind_speed_100m": 22.675
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 24.691666666666666
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 21.441666666666666
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 18.375
+      },
+      {
+        "date": "2026-08-04",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 9.045833333333333
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "central_germany",
+        "wind_speed_100m": 21.745833333333334
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "north_germany",
+        "wind_speed_100m": 22.833333333333332
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 36.6875
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 17.216666666666665
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 28.545833333333334
+      },
+      {
+        "date": "2026-08-05",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 15.458333333333334
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "central_germany",
+        "wind_speed_100m": 21.40416666666667
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "north_germany",
+        "wind_speed_100m": 30.629166666666666
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 41.4125
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 26.6875
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 32.30833333333333
+      },
+      {
+        "date": "2026-08-06",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 14.229166666666666
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "central_germany",
+        "wind_speed_100m": 11.872727272727273
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "north_germany",
+        "wind_speed_100m": 24.518181818181816
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "north_sea_offshore",
+        "wind_speed_100m": 26.79090909090909
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "northeast_germany",
+        "wind_speed_100m": 24.727272727272727
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "northwest_germany",
+        "wind_speed_100m": 19.677272727272726
+      },
+      {
+        "date": "2026-08-07",
+        "location_label": "southern_germany",
+        "wind_speed_100m": 14.063636363636363
+      }
+    ],
+    "license": "CC BY 4.0",
+    "attribution": "Weather data: Open-Meteo.com (CC BY 4.0), ECMWF IFS HRES 9km.",
+    "note": "Pipeline-validation pilot only; NOT used for historical model training."
+  },
+  "license": "CC BY 4.0",
+  "attribution": "Data: ENTSO-E Transparency Platform; Bundesnetzagentur | SMARD.de (CC BY 4.0). Weather: Open-Meteo.com (CC BY 4.0), ECMWF IFS HRES 9km.",
+  "limitations": [
+    "Official TSO day-ahead forecast is the strongest benchmark; the ML models do not outperform it in this experiment.",
+    "No reliable time-dependent DE-LU installed capacity is available, so installed-capacity nMAE is not reported.",
+    "Day-ahead price and load forecasts are excluded because their publication times are not present in the snapshot.",
+    "The 7-day weather pilot is not used for historical model training.",
+    "The historical snapshot ends on 2026-09-06."
+  ],
+  "generated_at_utc": "2026-11-24T18:08:30.462503+00:00"
+}
