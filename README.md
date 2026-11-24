@@ -139,13 +139,36 @@ work can begin without waiting for API authentication.
 > a live feed. Full column/quality details are in
 > [`data_dictionary.md`](data_dictionary.md).
 
+### Weather pilot (Phase 2, in progress)
+
+A 7-day pilot validates the weather-collection pipeline before scaling up.
+
+| Item | Value |
+|---|---|
+| Source | **Open-Meteo Single Runs API** (`single-runs-api.open-meteo.com/v1/forecast`) |
+| Model | **ECMWF IFS HRES 9km** (`ecmwf_ifs`) |
+| Variables | `wind_speed_100m` (km/h), `wind_direction_100m` (°), `temperature_2m` (°C), `surface_pressure` (hPa) |
+| Pilot delivery dates | 2026-08-01 → 2026-08-07 |
+| Decision time | 18:00 Europe/Berlin on the preceding day (16:00 UTC in CEST) |
+| Selected run | 06:00 UTC on the preceding day (conservative; availability not verifiable) |
+| Lead times | 16–39 h (mean 27.5 h) |
+| Locations | 6 (N, NW, NE, central, S Germany + North Sea offshore) |
+| Records | 1,008 (7 × 6 × 24), 0 missing |
+| License | **CC BY 4.0** |
+| Attribution | *Weather data: Open-Meteo.com (CC BY 4.0), ECMWF IFS HRES 9km.* |
+
+> The selected run's historical publication time **cannot be verified**; the
+> 06:00 UTC choice is a documented conservative assumption. See
+> [`data_dictionary.md`](data_dictionary.md) §6 for the full rationale.
+
 ### Upcoming / complementary sources
 
 - **ENTSO-E Transparency Platform** — live actual wind generation, day-ahead
   prices, and the official TSO day-ahead wind forecast. Requires a free API key
   (configured in `.env` during Phase 2).
 - **Open-Meteo** — historical numerical weather prediction (wind speed at 100 m,
-  direction, temperature, surface pressure). Free, no API key required.
+  direction, temperature, surface pressure). Free, no API key required. The
+  pilot above is the first step toward the full historical weather dataset.
 
 ---
 

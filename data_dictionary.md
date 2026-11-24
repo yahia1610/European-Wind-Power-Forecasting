@@ -130,3 +130,93 @@ forecast/valid boundary).
 4. **Attribution** — any chart, report, or published result derived from this
    data must credit *ENTSO-E Transparency Platform; Bundesnetzagentur | SMARD.de
    (CC BY 4.0)*.
+
+---
+
+## 6. Weather Pilot Data (Phase 2 — 7-day pilot)
+
+This section documents the initial weather collection pilot. It is a **pipeline
+validation exercise**, not the final weather dataset and not a final spatial
+aggregation method.
+
+### Source
+
+| Item | Value |
+|---|---|
+| API | **Open-Meteo Single Runs API** |
+| Endpoint | `https://single-runs-api.open-meteo.com/v1/forecast` |
+| Documentation | https://open-meteo.com/en/docs/single-runs-api |
+| Model | **ECMWF IFS HRES 9km** (`ecmwf_ifs`), 9 km O1280 grid, hourly, 15-day horizon |
+| Licence | **CC BY 4.0** |
+| Attribution | *Weather data: Open-Meteo.com (CC BY 4.0), ECMWF IFS HRES 9km.* |
+| Request parameter | `run` = model initialisation time (UTC, ISO-8601, no seconds) |
+
+### Pilot scope
+
+| Item | Value |
+|---|---|
+| Delivery dates | **2026-08-01 → 2026-08-07** (7 days) |
+| Forecast decision time | 18:00 Europe/Berlin on the preceding day = **16:00 UTC (CEST)** |
+| Selected model run | **06:00 UTC on the preceding day** (conservative; see limitation) |
+| Forecast lead times | **16–39 h** (mean 27.5 h) |
+| Locations | **6** |
+| Records | **1,008** (7 days × 6 locations × 24 h) |
+| Missing values | **0** across all four variables |
+| Raw responses | `data/raw/weather/` (42 JSON files, git-ignored) |
+| Normalized data | `data/processed/weather_test/weather_pilot.parquet` / `.csv` (git-ignored) |
+| Manifest | `data/processed/weather_test/manifest.json` (git-ignored) |
+
+### Geographic grid points
+
+These are illustrative, geographically distributed points used to validate the
+pipeline. They are **not capacity-weighted**.
+
+| Label | Description | Latitude | Longitude | Class |
+|---|---|---|---|---|
+| `north_germany` | Northern Germany (Schleswig-Holstein, near Kiel) | 54.30 | 10.10 | land |
+| `northwest_germany` | Northwestern Germany (East Frisia, near Emden) | 53.50 | 7.30 | land |
+| `northeast_germany` | Northeastern Germany (Mecklenburg-Vorpommern) | 53.90 | 12.20 | land |
+| `central_germany` | Central Germany (Hessen / Thuringia) | 51.00 | 10.50 | land |
+| `southern_germany` | Southern Germany (Bavaria / Baden-Wuerttemberg) | 48.50 | 11.50 | land |
+| `north_sea_offshore` | North Sea offshore (German Bight) | 54.20 | 7.50 | offshore |
+
+### Variables and units
+
+All times are stored in **UTC**. Units are exactly as documented by Open-Meteo.
+
+| Column | Unit | Description |
+|---|---|---|
+| `wind_speed_100m` | **km/h** | Wind speed at 100 m above ground |
+| `wind_direction_100m` | **°** (degrees) | Meteorological wind direction (the direction wind blows *from*, clockwise from north) |
+| `temperature_2m` | **°C** | Air temperature at 2 m |
+| `surface_pressure` | **hPa** | Surface atmospheric pressure |
+
+### Normalized schema (`weather_pilot.parquet`)
+
+`delivery_date`, `location_label`, `classification`, `latitude`, `longitude`,
+`model`, `init_time_utc`, `valid_time_utc`, `lead_hours`,
+`wind_speed_100m`, `wind_direction_100m`, `temperature_2m`, `surface_pressure`.
+
+- `init_time_utc` — model run initialisation (UTC).
+- `valid_time_utc` — the hour the forecast refers to (UTC).
+- `lead_hours` — `(valid_time_utc - init_time_utc)` in hours.
+
+### Historical availability limitation (important)
+
+Open-Meteo's metadata API only reports availability for the **latest** model run;
+it does **not** expose historical per-run publication timestamps. Therefore we
+**cannot verify** that a specific archived run was actually published before the
+18:00 Europe/Berlin decision time.
+
+To stay conservative, the pilot selects the latest run whose **estimated**
+availability (initialisation + a **6-hour nominal delay**) is at or before the
+decision cutoff. For a 16:00 UTC cutoff this selects the **06:00 UTC** run
+(estimated available 12:00 UTC). This is a **documented methodological
+assumption, not verified historical availability**. The 12:00 UTC run
+(estimated available ~18:00 UTC) was deliberately not used.
+
+### Missing data
+
+The pilot has **no missing values** and **no duplicate timestamps**; no
+interpolation was applied. Any future missing weather should be reported, not
+silently filled.
