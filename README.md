@@ -302,14 +302,24 @@ documented in `docs/data_sources/delu_snapshot/README.md` and verify its SHA-256
 > Weather data: Open-Meteo.com (CC BY 4.0), ECMWF IFS HRES 9km.
 
 ---
+## About Me
 
-## Project Status
+**Yahia Eid Hassan El-Samman**  
+Recent Graduate | Artificial Intelligence, Machine Learning & Data Science
 
-| Phase | Description | Status |
-|---|---|---|
-| 1 | Project setup and environment | ✅ |
-| 2 | Data collection (snapshot + weather pilot) | ✅ |
-| 3 | Data preparation and EDA | ✅ |
-| 4 | Models, evaluation, TSO benchmark | ✅ |
-| 5 | Streamlit dashboard | ✅ |
-| 6 | Documentation and final review | ✅ |
+I am a 2026 graduate of Assiut University, Faculty of Commerce, specializing in Public Policy Information Systems (PPIS), with a strong focus on Artificial Intelligence, Machine Learning, and Data Science.
+
+I enjoy building practical, data-driven solutions and working on end-to-end projects involving data analysis, predictive modeling, and intelligent systems.
+
+**Technical Interests**
+- Machine Learning & Predictive Analytics
+- Data Science & Statistical Analysis
+- Time Series Forecasting
+- Generative AI & Intelligent Applications
+- Data Visualization & Business Intelligence
+
+**Technologies & Tools**
+
+Python · SQL · Pandas · NumPy · Scikit-learn · LightGBM · PyTorch · TensorFlow · Power BI · Tableau · Git · GitHub
+
+**GitHub:** [github.com/yahia1610](https://github.com/yahia1610)
