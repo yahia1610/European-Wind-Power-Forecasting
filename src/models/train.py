@@ -297,6 +297,29 @@ def _export_dashboard_results(
         "actual_publication": "H+1 (available at interval_start + 1h)",
         "dst_handling": "23-hour and 25-hour delivery days preserved",
         "splits": summary.get("splits", {}),
+        "data_quality": {
+            "timezone": "UTC",
+            "hourly_frequency": True,
+            "duplicate_timestamps": int(df.index.duplicated().sum()),
+            "negative_prices": int((df["price_eur_mwh"] < 0).sum()),
+            "target_missing_rows": int(df["wind_total_actual_mw"].isna().sum()),
+            "missing_values": {
+                key: int(value)
+                for key, value in df[
+                    [
+                        "price_eur_mwh",
+                        "load_forecast_mw",
+                        "wind_total_actual_mw",
+                        "wind_total_forecast_mw",
+                        "wind_onshore_actual_mw",
+                        "wind_offshore_actual_mw",
+                    ]
+                ]
+                .isna()
+                .sum()
+                .items()
+            },
+        },
         "models_test_metrics": test_metrics,
         "tso_is_best_benchmark": True,
         "nmae_note": summary.get("nmae_note", ""),

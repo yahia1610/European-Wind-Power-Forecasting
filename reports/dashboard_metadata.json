@@ -16,6 +16,21 @@
     "validation": 17544,
     "test": 14732
   },
+  "data_quality": {
+    "timezone": "UTC",
+    "hourly_frequency": true,
+    "duplicate_timestamps": 0,
+    "negative_prices": 2501,
+    "target_missing_rows": 1,
+    "missing_values": {
+      "price_eur_mwh": 0,
+      "load_forecast_mw": 194,
+      "wind_total_actual_mw": 1,
+      "wind_total_forecast_mw": 3,
+      "wind_onshore_actual_mw": 1,
+      "wind_offshore_actual_mw": 0
+    }
+  },
   "models_test_metrics": [
     {
       "model": "persistence",
@@ -362,5 +377,5 @@
     "The 7-day weather pilot is not used for historical model training.",
     "The historical snapshot ends on 2026-09-06."
   ],
-  "generated_at_utc": "2026-11-24T18:08:30.462503+00:00"
+  "generated_at_utc": "2026-11-24T18:10:48.573627+00:00"
 }
